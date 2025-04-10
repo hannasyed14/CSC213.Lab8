@@ -156,11 +156,11 @@ public class App {
     public static List<String> getHomeProductIdsUnder100(List<Review> reviews) {
         //TODO - you need to implement this using a functional approach!
         return reviews.stream()
-                .filter(r -> "Home".equalsIgnoreCase(r.getCategory())) // Filter only "Home" category
-                .filter(r -> r.getPrice() < 100) // Filter for price less than 100
-                .sorted(Comparator.comparingDouble(Review::getPrice)) // Sort by price in ascending order
-                .map(Review::getProductId) // Extract the productId
-                .collect(Collectors.toList()); // Collect into a list
+                .filter(r -> "Home".equalsIgnoreCase(r.getCategory())) //filter "home"
+                .filter(r -> r.getPrice() < 100) //price less than 100
+                .sorted(Comparator.comparingDouble(Review::getPrice)) // ascending order for price
+                .map(Review::getProductId) //get product id
+                .collect(Collectors.toList()); //put into list
     }
     }
     
