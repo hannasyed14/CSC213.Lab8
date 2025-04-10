@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
+import java.util.*;
 public class App {
 
     public static void main(String[] args) throws Exception {
         Reader reader = new InputStreamReader(App.class.getResourceAsStream("/reviews.csv"));
+        // turns csv file by getting input stream
         List<Review> reviews = new CsvToBeanBuilder<Review>(reader)
                 .withType(Review.class)
                 .withIgnoreLeadingWhiteSpace(true)
@@ -21,6 +22,7 @@ public class App {
                 .parse();
 
         System.out.println("Loaded Reviews:");
+        // Shortcut : for(Review review: reviews) { System.out.println(review) }
         reviews.forEach(System.out::println);
 
         System.out.println("\n--- Reviews with price between 20 and 100 ---");
@@ -117,7 +119,9 @@ public class App {
 
     public static List<Review> filterByPriceRange(List<Review> reviews, double min, double max) {
         //TODO - you need to implement this using a functional approach!
-        return null;
+        return reviews.stream()
+                .filter(r -> r.getPrice() >= min && r.getPrice() <= max)
+                .collect(Collectors.toList());
     }
 
     public static Map<String, Long> countByProductId(List<Review> reviews) {
@@ -140,20 +144,25 @@ public class App {
 
     public static List<String> getTechTitlesOver50Dollars(List<Review> reviews) {
         return reviews.stream()
-                .filter(r -> "Tech".equalsIgnoreCase(r.getCategory()))       // Keep only Tech reviews
-                .filter(r -> r.getPrice() > 50)                              // ...with price > 50
-                .map(Review::getTitle)                                       // Extract the title
-                .filter(Objects::nonNull)                                    // Avoid nulls just in case
-                .map(String::toUpperCase)                                    // Convert titles to uppercase
-                .collect(Collectors.toList());                               // Final result: List<String>  
+                .filter(r -> "Tech".equalsIgnoreCase(r.getCategory()))       // keeps "Tech"
+                .filter(r -> r.getPrice() > 50)                              // price greater than 50
+                .map(Review::getTitle)                                       //extract title
+                .filter(Objects::nonNull)                                    //no nulls
+                .map(String::toUpperCase)                                    //titles uppercase
+                .collect(Collectors.toList());                               //list
     }
 
 
     public static List<String> getHomeProductIdsUnder100(List<Review> reviews) {
         //TODO - you need to implement this using a functional approach!
-        return new ArrayList<String>();                             // Final list of productIds
+        return reviews.stream()
+                .filter(r -> "Home".equalsIgnoreCase(r.getCategory())) // Filter only "Home" category
+                .filter(r -> r.getPrice() < 100) // Filter for price less than 100
+                .sorted(Comparator.comparingDouble(Review::getPrice)) // Sort by price in ascending order
+                .map(Review::getProductId) // Extract the productId
+                .collect(Collectors.toList()); // Collect into a list
     }
-
+    }
     
 
-}
+
